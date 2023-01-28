@@ -21,6 +21,7 @@ class HomeView extends GetView<HomeController> {
       body: ListView(
         padding: EdgeInsets.all(24),
         children: [
+          //Awal province
           DropdownSearch<Province>(
             popupProps: PopupProps.menu(
               showSearchBox: true,
@@ -35,26 +36,15 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             asyncItems: (text) async {
-              final response = await http.get(
-                Uri.parse('https://api.rajaongkir.com/starter/province'),
-                headers: {
-                  'key': 'bf32d82b4c142f1753cdb1508edabe5f',
-                },
-              );
-
-              if (response.statusCode != 200) {
-                return [];
-              }
-
-              Map<String, dynamic> data = jsonDecode(response.body);
-
-              return Province.fromJsonList(data['rajaongkir']['results']);
+              return controller.getBeginningProvince();
             },
-            onChanged: (value) => controller.provId.value = value?.provinceId ?? '0',
+            onChanged: (value) => controller.provId = value?.provinceId ?? '0',
           ),
           SizedBox(
             height: 24,
           ),
+
+          // Awal City
           DropdownSearch<City>(
             popupProps: PopupProps.menu(
               itemBuilder: (context, item, isSelected) => ListTile(
@@ -68,22 +58,15 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             asyncItems: (text) async {
-              var response = await http.get(
-                Uri.parse('https://api.rajaongkir.com/starter/city?province=${controller.provId}'),
-                headers: {'key': 'bf32d82b4c142f1753cdb1508edabe5f'},
-              );
-
-              Map<String, dynamic> data = jsonDecode(response.body);
-
-              var models = City.fromJsonList(data['rajaongkir']['results']);
-              return models;
+              return controller.getBeginningCity();
             },
-            onChanged:(value) => controller.citId.value = value?.cityId ?? '0',
+            onChanged: (value) => controller.cityId = value?.cityId ?? '0',
           ),
-
           SizedBox(
             height: 44,
           ),
+
+          //Akhir Province
           DropdownSearch<Province>(
             popupProps: PopupProps.menu(
               itemBuilder: (context, item, isSelected) => ListTile(
@@ -97,21 +80,16 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             asyncItems: (text) async {
-              var response = await http.get(
-                Uri.parse('https://api.rajaongkir.com/starter/province'),
-                headers: {'key': 'bf32d82b4c142f1753cdb1508edabe5f'},
-              );
-
-              Map<String, dynamic> data = jsonDecode(response.body);
-
-              var models = Province.fromJsonList(data['rajaongkir']['results']);
-              return models;
+              return controller.getBeginningProvince();
             },
-            onChanged:(value) => controller.nextProvId.value = value?.provinceId ?? '0',
+            onChanged: (value) =>
+                controller.endProvId = value?.provinceId ?? '0',
           ),
           SizedBox(
             height: 24,
           ),
+
+          //Akhir City
           DropdownSearch<City>(
             popupProps: PopupProps.menu(
               itemBuilder: (context, item, isSelected) => ListTile(
@@ -125,17 +103,61 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             asyncItems: (text) async {
-              var response = await http.get(
-                Uri.parse('https://api.rajaongkir.com/starter/city?province=${controller.nextProvId}'),
-                headers: {'key': 'bf32d82b4c142f1753cdb1508edabe5f'},
-              );
-
-              Map<String, dynamic> data = jsonDecode(response.body);
-
-              var models = City.fromJsonList(data['rajaongkir']['results']);
-              return models;
+              return controller.getEndCity();
             },
-            onChanged:(value) => controller.nextCitId.value = value?.cityId ?? '0',
+            onChanged: (value) => controller.endCityId = value?.cityId ?? '0',
+          ),
+          SizedBox(height: 24),
+          TextField(
+            controller: controller.beratC,
+            autocorrect: false,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Berat Barang (gram)',
+            ),
+          ),
+          SizedBox(
+            height: 24,
+          ),
+          DropdownSearch<Map<String, dynamic>>(
+            items: [
+              {'code': 'jne', 'name': 'JNE'},
+              {'code': 'pos', 'name': 'POS Indonesia'},
+              {'code': 'tiki', 'name': 'TIKI'},
+            ],
+            dropdownDecoratorProps: DropDownDecoratorProps(
+              dropdownSearchDecoration: InputDecoration(
+                // labelText: 'Kurir',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            popupProps: PopupProps.menu(
+              showSearchBox: true,
+              itemBuilder: (context, item, isSelected) => ListTile(
+                title: Text(
+                  '${item['name']}',
+                ),
+              ),
+            ),
+            dropdownBuilder: (context, selectedItem) => Text(
+              '${selectedItem?['name'] ?? 'Pilih Kurir'}',
+            ),
+            onChanged: (value) =>
+                controller.codeKurir.value = value?['code'] ?? '',
+          ),
+
+          SizedBox(height: 24),
+          Obx(
+            () => ElevatedButton(
+              onPressed: () {
+                if (controller.isLoading.isFalse) {
+                  controller.cekOngkir();
+                }
+              },
+              child: Text(
+                  controller.isLoading.isFalse ? 'Cek Ongkir' : 'Loading...'),
+            ),
           ),
         ],
       ),
