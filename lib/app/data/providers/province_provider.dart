@@ -3,22 +3,16 @@ import 'package:get/get.dart';
 import '../models/province_model.dart';
 
 class ProvinceProvider extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.defaultDecoder = (map) {
-      if (map is Map<String, dynamic>) return Province.fromJson(map);
-      if (map is List)
-        return map.map((item) => Province.fromJson(item)).toList();
-    };
-    httpClient.baseUrl = 'YOUR-API-URL';
+  
+
+  Future<List<Province>> getProvince() async {
+    final response = await get('https://api.rajaongkir.com/starter/province',headers:  {'key': 'bf32d82b4c142f1753cdb1508edabe5f'},);
+    return Province.fromJsonList(response.body['rajaongkir']['results']);
   }
 
-  Future<Province?> getProvince(int id) async {
-    final response = await get('province/$id');
-    return response.body;
-  }
+  
 
-  Future<Response<Province>> postProvince(Province province) async =>
-      await post('province', province);
-  Future<Response> deleteProvince(int id) async => await delete('province/$id');
+  // Future<Response<Province>> postProvince(Province province) async =>
+  //     await post('province', province);
+  // Future<Response> deleteProvince(int id) async => await delete('province/$id');
 }
