@@ -1,11 +1,13 @@
 import 'dart:convert';
 
-import 'package:check_delivery/app/data/models/ongkir_model.dart';
+import 'package:check_delivery/app/constant/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:check_delivery/app/data/models/ongkir_model.dart';
 import 'package:check_delivery/app/data/providers/city_provider.dart';
 import 'package:check_delivery/app/data/providers/province_provider.dart';
 
@@ -25,8 +27,26 @@ class HomeController extends GetxController {
   String endCityId = '';
 
   RxBool isLoading = false.obs;
+  RxBool isLightTheme = false.obs;
 
   RxString codeKurir = ''.obs;
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  saveThemStatus() async {
+    SharedPreferences prefs = await _prefs;
+    prefs.setBool('theme', isLightTheme.value);
+  }
+
+  getThemeStatus() async {
+    var _isLight = _prefs.then((SharedPreferences prefs) {
+      return prefs.getBool('theme') != null ? prefs.getBool('theme') : true;
+    }).obs;
+
+    isLightTheme.value = await  _isLight.value as bool;
+
+    Get.changeThemeMode(isLightTheme.value ? ThemeMode.light : ThemeMode.dark);
+  }
 
   Future<List<Province>> getBeginningProvince() async {
     return await provProvince.getProvince();

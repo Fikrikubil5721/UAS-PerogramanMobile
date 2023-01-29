@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:check_delivery/app/constant/color.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,7 +33,10 @@ class HomeView extends GetView<HomeController> {
             dropdownDecoratorProps: DropDownDecoratorProps(
               dropdownSearchDecoration: InputDecoration(
                 labelText: 'Province',
-                border: OutlineInputBorder(),
+                labelStyle: Get.textTheme.bodyText2,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: white),
+                ),
               ),
             ),
             asyncItems: (text) async {
@@ -157,6 +161,24 @@ class HomeView extends GetView<HomeController> {
               },
               child: Text(
                   controller.isLoading.isFalse ? 'Cek Ongkir' : 'Loading...'),
+            ),
+          ),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     Get.changeTheme(Get.isDarkMode ? light : dark);
+          //   },
+          //   child: Text('Ganti tema'),
+          // ),
+          Obx(
+            () => Switch(
+              value: controller.isLightTheme.value,
+              onChanged: (value) {
+                controller.isLightTheme.value = value;
+                Get.changeThemeMode(controller.isLightTheme.value
+                    ? ThemeMode.light
+                    : ThemeMode.dark);
+                controller.saveThemStatus();
+              },
             ),
           ),
         ],

@@ -5,4 +5,5 @@ class CostProvider extends GetConnect {
   void onInit() {
     httpClient.baseUrl = 'YOUR-API-URL';
   }
+  
 }
