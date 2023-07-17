@@ -4,6 +4,14 @@ A new Flutter project.
 
 ## Getting Started
 
+Aplikasi cek ongkir dengan menggunakan flutter get cli dan :
+
+<p> api https://api.rajaongkir.com/</p>
+
+![img](assets/kubil1.png)
+![img](assets/kubil2.png)
+![img](assets/kubil3.png)
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
